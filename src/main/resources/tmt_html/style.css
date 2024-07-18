@@ -5,3 +5,23 @@ table, th, td {
   background-color: whitesmoke;
   padding: 4px;
 }
+
+/* for HtmlDecorator */
+.black          { color: black; }
+.red            { color: darkred; }
+.green          { color: darkgreen; }
+.yellow         { color: gold; }
+.blue           { color: darkblue; }
+.magenta        { color: darkmagenta; }
+.cyan           { color: darkcyan; }
+.white          { color: ghostwhite; }
+.bright.black   { color: darkgrey; }
+.bright.red     { color: red; }
+.bright.green   { color: green; }
+.bright.yellow  { color: goldenrod; }
+.bright.blue    { color: blue; }
+.bright.magenta { color: magenta; }
+.bright.cyan    { color: #00e5ff; }
+.bright.white   { color: white; }
+.bold           { font-weight: bold; }
+.underline      { text-decoration: underline; }
