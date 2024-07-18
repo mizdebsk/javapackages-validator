@@ -5,6 +5,9 @@ table, th, td {
   background-color: whitesmoke;
   padding: 4px;
 }
+td:first-child {
+  text-align:center;
+}
 
 /* for HtmlDecorator */
 .black          { color: black; }

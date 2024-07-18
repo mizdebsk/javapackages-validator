@@ -96,7 +96,7 @@ public class MainTmt extends Main {
 
         public void printRow(LogEntry entry) {
             println("  <tr class=\"" + entry.kind() + "\">");
-            println("    <td style=\"text-align:center;\">" + HtmlDecorator.INSTANCE.decorate(entry.kind().getDecorated()) + "</td>");
+            println("    <td>" + HtmlDecorator.INSTANCE.decorate(entry.kind().getDecorated()) + "</td>");
             println("    <td>" + Main.decoratedObjects(entry, HtmlDecorator.INSTANCE) + "</td>");
             println("  </tr>");
         }
