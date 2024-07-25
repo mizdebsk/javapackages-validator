@@ -38,10 +38,10 @@ WORKDIR "/usr/local/src/javapackages-validator"
 
 # First fetch dependencies without having sources
 COPY "pom.xml" "/usr/local/src/javapackages-validator/"
-RUN mvn -B -T16 -Daether.dependencyCollector.impl=bf clean install javadoc:javadoc
+RUN mvn -B -T16 -Daether.dependencyCollector.impl=bf -Dmaven.artifact.threads=16 clean install javadoc:javadoc
 
 COPY "src/" "/usr/local/src/javapackages-validator/src/"
-RUN mvn -B -T16 -Daether.dependencyCollector.impl=bf clean install javadoc:javadoc
+RUN mvn -B -T16 -Daether.dependencyCollector.impl=bf -Dmaven.artifact.threads=16 clean install javadoc:javadoc
 
 ################################################################################
 
