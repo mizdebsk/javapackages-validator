@@ -1,6 +1,8 @@
 FROM docker.io/library/eclipse-temurin:21-jdk-ubi9-minimal AS builder
-RUN microdnf download maven; \
+COPY c10s.repo /etc/yum.repos.d/c10s.repo
+RUN microdnf --disablerepo \* --enablerepo c10s download maven; \
  for pkg in \
+ aopalliance \
  apache-commons-cli \
  apache-commons-codec \
  apache-commons-io \
@@ -29,17 +31,17 @@ RUN microdnf download maven; \
  publicsuffix-list \
  sisu \
  slf4j \
- ; do microdnf download $pkg & done; wait
+ ; do microdnf --disablerepo \* --enablerepo c10s download $pkg & done; wait
 RUN rpm --nodeps -ivh *.rpm
 
 WORKDIR "/usr/local/src/javapackages-validator"
 
 # First fetch dependencies without having sources
 COPY "pom.xml" "/usr/local/src/javapackages-validator/"
-RUN mvn -B clean install javadoc:javadoc
+RUN mvn -B -T16 -Daether.dependencyCollector.impl=bf clean install javadoc:javadoc
 
 COPY "src/" "/usr/local/src/javapackages-validator/src/"
-RUN mvn -B clean install javadoc:javadoc
+RUN mvn -B -T16 -Daether.dependencyCollector.impl=bf clean install javadoc:javadoc
 
 ################################################################################
 
