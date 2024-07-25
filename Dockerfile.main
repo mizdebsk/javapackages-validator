@@ -1,5 +1,6 @@
 FROM docker.io/library/eclipse-temurin:21-jdk-ubi9-minimal AS builder
-RUN microdnf -y download \
+RUN microdnf download maven; \
+ for pkg in \
  apache-commons-cli \
  apache-commons-codec \
  apache-commons-io \
@@ -15,7 +16,6 @@ RUN microdnf -y download \
  jcl-over-slf4j \
  jsoup \
  jsr-305 \
- maven \
  maven-lib \
  maven-resolver \
  maven-shared-utils \
@@ -28,7 +28,8 @@ RUN microdnf -y download \
  plexus-utils \
  publicsuffix-list \
  sisu \
- slf4j
+ slf4j \
+ ; do microdnf download $pkg & done; wait
 RUN rpm --nodeps -ivh *.rpm
 
 WORKDIR "/usr/local/src/javapackages-validator"
