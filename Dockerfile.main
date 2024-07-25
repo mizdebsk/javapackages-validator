@@ -1,5 +1,35 @@
 FROM docker.io/library/eclipse-temurin:21-jdk-ubi9-minimal AS builder
-RUN microdnf -y install git-core maven rpm-libs
+RUN microdnf -y download \
+ apache-commons-cli \
+ apache-commons-codec \
+ apache-commons-io \
+ apache-commons-lang3 \
+ atinject \
+ cdi-api \
+ google-guice \
+ guava \
+ httpcomponents-client \
+ httpcomponents-core \
+ jakarta-annotations \
+ jansi \
+ jcl-over-slf4j \
+ jsoup \
+ jsr-305 \
+ maven \
+ maven-lib \
+ maven-resolver \
+ maven-shared-utils \
+ maven-wagon \
+ plexus-cipher \
+ plexus-classworlds \
+ plexus-containers-component-annotations \
+ plexus-interpolation \
+ plexus-sec-dispatcher \
+ plexus-utils \
+ publicsuffix-list \
+ sisu \
+ slf4j
+RUN rpm --nodeps -ivh *.rpm
 
 WORKDIR "/usr/local/src/javapackages-validator"
 
