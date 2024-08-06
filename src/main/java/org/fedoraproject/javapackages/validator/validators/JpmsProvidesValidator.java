@@ -1,6 +1,7 @@
 package org.fedoraproject.javapackages.validator.validators;
 
 import java.io.ByteArrayInputStream;
+import java.lang.module.InvalidModuleDescriptorException;
 import java.lang.module.ModuleDescriptor;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -38,8 +39,16 @@ public class JpmsProvidesValidator extends JarValidator {
                 if (entry.getName().equals("module-info.class")
                         || (entry.getName().startsWith("META-INF/versions/")
                             && VERSIONS_PATTERN.matcher(entry.getName()).matches())) {
-                    var md = ModuleDescriptor.read(ByteBuffer.wrap(is.readNBytes((int) entry.getSize())));
-                    moduleNames.add(Map.entry(entry.getName(), md.name()));
+                    try {
+                        var md = ModuleDescriptor.read(ByteBuffer.wrap(is.readNBytes((int) entry.getSize())));
+                        moduleNames.add(Map.entry(entry.getName(), md.name()));
+                    } catch (InvalidModuleDescriptorException e) {
+                        fail("{0}: {1}: {2}: invalid module descriptor: {3}",
+                                Decorated.rpm(rpm),
+                                Decorated.outer(rpmEntryString),
+                                Decorated.struct(entry.getRealName()),
+                                Decorated.actual(e.getMessage()));
+                    }
                 }
             }
 
