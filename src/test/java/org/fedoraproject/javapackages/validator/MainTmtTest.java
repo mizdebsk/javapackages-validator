@@ -1,15 +1,16 @@
 package org.fedoraproject.javapackages.validator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.fedoraproject.javapackages.validator.spi.Decorated;
 import org.junit.jupiter.api.BeforeEach;
@@ -266,24 +267,35 @@ class MainTmtTest {
     @Test
     void testParallel() throws Exception {
         copyResources(artifactsDir, "arg_file_iterator/dangling-symlink-1-1.noarch.rpm");
+        CountDownLatch cdA = new CountDownLatch(1);
+        CountDownLatch cdB = new CountDownLatch(1);
         addValidator("/one", (rpms, v) -> {
             System.err.println("Running one...");
-            Thread.sleep(Duration.ofSeconds(2));
+            cdA.countDown();
+            if (cdB.await(2, TimeUnit.SECONDS)) {
+                System.err.println("PASS");
+                v.pass("passed");
+            } else {
+                System.err.println("FAIL");
+                v.fail("failed");
+            }
             System.err.println("Done one...");
-            v.pass("passed");
         });
         addValidator("/two", (rpms, v) -> {
             System.err.println("Running two...");
-            Thread.sleep(Duration.ofSeconds(2));
+            cdB.countDown();
+            if (cdA.await(2, TimeUnit.SECONDS)) {
+                System.err.println("PASS");
+                v.pass("passed");
+            } else {
+                System.err.println("FAIL");
+                v.fail("failed");
+            }
             System.err.println("Done two...");
-            v.pass("passed");
+
         });
-        Instant start = Instant.now();
         runMain(0);
-        Instant finish = Instant.now();
-        Duration duration = Duration.between(start, finish);
-        System.err.println("Duration was " + duration);
-        assertTrue(duration.compareTo(Duration.ofSeconds(3)) < 0);
         assertTrue(readResult("results.yaml").contains("result: pass"), "result is pass");
+        assertFalse(readResult("results.yaml").contains("result: fail"), "result is pass");
     }
 }
